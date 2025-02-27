@@ -13,7 +13,9 @@ def main():
     pendingBalanceFile = open(args.pendingBalanceFile, 'r')
     outputFile = open(args.outputFile, "a+")
 
-    balanceMap = {}
+    pendingBalanceMap = {}
+    currentBalanceMap = {}
+    totalBalanceMap = {}
     guidMap = {}
 
     for line in pendingBalanceFile:
@@ -25,7 +27,8 @@ def main():
         address = splitLine[0].strip().upper()
         balance = float(splitLine[1])
 
-        balanceMap[address] = balance
+        totalBalanceMap[address] = balance
+        pendingBalanceMap[address] = balance
 
     for line in currentBalanceFile:
         if not line:
@@ -37,20 +40,30 @@ def main():
         address = splitLine[1].strip().upper()
         balance = float(splitLine[2].strip())
 
-        if address in balanceMap:
-            balanceMap[address] = balanceMap[address] + balance
+        currentBalanceMap[address] = balance
+
+        if address in totalBalanceMap:
+            totalBalanceMap[address] = totalBalanceMap[address] + balance
         else:
-            balanceMap[address] = balance
+            totalBalanceMap[address] = balance
 
         guidMap[address] = guid
 
-    for address in balanceMap:
+    for address in totalBalanceMap:
         guid = "NULL"
         if address in guidMap:
             guid = guidMap[address]
         
-        totalBalance = balanceMap[address]
-        outputFile.write(f"{guid},{address},{totalBalance:.20f}\n")
+        totalBalance = totalBalanceMap[address]
+        pendingBalance = 0
+        if address in pendingBalanceMap:
+            pendingBalance = pendingBalanceMap[address]
+
+        currentBalance = 0
+        if address in currentBalanceMap:
+            currentBalance = currentBalanceMap[address]
+
+        outputFile.write(f"{guid},{address},{currentBalance:.20f},{pendingBalance:.20f},{totalBalance:.20f}\n")
 
     outputFile.flush()
     outputFile.close()

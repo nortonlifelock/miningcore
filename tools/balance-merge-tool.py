@@ -20,6 +20,7 @@ def main():
     pendingBalanceSum = 0
     currentBalanceSum = 0
     totalBalanceSum = 0
+    nonZeroAccounts = 0
 
     guidMap = {}
 
@@ -73,9 +74,18 @@ def main():
         if address in currentBalanceMap:
             currentBalance = currentBalanceMap[address]
 
+        if currentBalance > 0:
+            nonZeroAccounts += 1
+
         outputFile.write(f"{guid},{address},{currentBalance:.20f},{pendingBalance:.20f},{totalBalance:.20f}\n")
 
-    print(f"Total Current Balance: {currentBalanceSum:.20f}, Total Pending Balance: {pendingBalanceSum:.20f}, Total Combined Balance: {totalBalanceSum:.20f}")
+    print("\n================================================")
+    print(f"Total Non Zero Accounts: {nonZeroAccounts}")
+    print(f"Total Current Balance: {currentBalanceSum:.20f}")
+    print(f"Total Pending Balance: {pendingBalanceSum:.20f}")
+    print(f"Total Combined Balance: {totalBalanceSum:.20f}")
+    print("================================================\n")
+
     outputFile.flush()
     outputFile.close()
 
